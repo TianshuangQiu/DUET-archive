@@ -17,7 +17,7 @@ def readfile(n):
     else:
         numstring = str(n)
 
-    filename = "autolab/Expressive-MP/waypoints/IMG_4015/IMG_4015_00000000" + \
+    filename = "/home/akita/autolab/Expressive-MP/waypoints/IMG_4015/IMG_4015_00000000" + \
         numstring + "_keypoints.json"
 
     item = pd.read_json(filename)
@@ -101,6 +101,7 @@ for n in range(2116):
 
 tl = np.array(theta_list)
 tl[tl < 0] = tl[tl < 0] + 2 * np.pi
+
 kernel = np.array([1, 2, 4, 6, 10, 14, 17, 19, 17, 14, 10, 6, 4, 2, 1])
 #kernel = np.ones(9)
 kernel = kernel / np.sum(kernel)
@@ -116,26 +117,7 @@ sh = 0 - data[0]
 el = data[0] - data[1]
 wr = data[1] - data[2]
 
-sh_filtered = fourier_filter(sh, 25)
-el_filtered = fourier_filter(el, 15)
-wr_filtered = fourier_filter(wr, 10)
+data_stack = np.vstack([sh, el, wr])
 
-position = np.vstack([np.zeros_like(t),
-                      # np.sin(np.arange(len(data[0])) * 2 * np.pi / len(data[0])) * 0.5,
-                      sh_filtered,
-                      el_filtered,
-                      wr_filtered,
-                      np.ones_like(t) * np.pi / 2,
-                      np.zeros_like(t)
-                      ]).T
-
-position = linear_interp(position, int(1 / FRAMERATE / TIMESTEP))
-t_int = linear_interp(t[np.newaxis].T, int(1 / FRAMERATE / TIMESTEP))
-
-velocity = num_deriv(position, TIMESTEP)
-acceleration = num_deriv(velocity, TIMESTEP)
-jerk = num_deriv(acceleration, TIMESTEP)
-
-output = np.hstack([t_int, position, velocity, acceleration, jerk])
-output = np.round_(output, decimals=5)
-np.savetxt("IMG_4015.dat", output, fmt="%10.5f", delimiter='\t')
+with open("saves/IMG_4015", "wb") as f:
+    np.save(f, data_stack)
