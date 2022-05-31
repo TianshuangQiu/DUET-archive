@@ -15,7 +15,7 @@ import numpy as np
 # C0_13 is IMG_4010 TWICE
 
 
-n_epochs = 3
+n_epochs = 30
 batch_size_train = 100
 batch_size_test = 10
 learning_rate = 0.01
@@ -92,89 +92,22 @@ for epoch in range(n_epochs):
             print(
                 f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
 plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Correct Pairing")
-
-dataset = Move("saves/neural_test")
-train_data, test_data = torch.utils.data.random_split(dataset, [(int)(len(dataset)*0.8), len(
-    dataset)-(int)(len(dataset)*0.8)], generator=torch.Generator().manual_seed(random_seed))
-train_loader = DataLoader(
-    dataset=train_data, batch_size=batch_size_train, shuffle=True)
-test_loader = DataLoader(
-    dataset=test_data, batch_size=batch_size_test, shuffle=False)
-
-mse = nn.MSELoss()
-model = Model(266, 100, 6)
-optim = torch.optim.SGD(
-    lr=learning_rate, params=model.parameters(), momentum=momentum)
-
-total_steps = len(train_loader)
-print(total_steps)
-loss_arr = np.array([0, 0])
-for epoch in range(n_epochs):
-    for i, (data, label) in enumerate(train_loader):
-        data = data.to(device)
-        label = label.to(device)
-
-        output = model(data.float())
-        loss = mse(output, label)
-
-        optim.zero_grad()
-        loss.backward()
-        optim.step()
-        loss_arr = np.vstack(
-            [loss_arr, [i+total_steps*epoch, loss.detach().numpy()]])
-        if i % log_interval == 0:
-            print(
-                f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
-plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Random Pairing 1")
-
-
-dataset = Move("saves/neural_test_2")
-train_data, test_data = torch.utils.data.random_split(dataset, [(int)(len(dataset)*0.8), len(
-    dataset)-(int)(len(dataset)*0.8)], generator=torch.Generator().manual_seed(random_seed))
-train_loader = DataLoader(
-    dataset=train_data, batch_size=batch_size_train, shuffle=True)
-test_loader = DataLoader(
-    dataset=test_data, batch_size=batch_size_test, shuffle=False)
-
-mse = nn.MSELoss()
-model = Model(266, 100, 6)
-optim = torch.optim.SGD(
-    lr=learning_rate, params=model.parameters(), momentum=momentum)
-
-total_steps = len(train_loader)
-print(total_steps)
-loss_arr = np.array([0, 0])
-for epoch in range(n_epochs):
-    for i, (data, label) in enumerate(train_loader):
-        data = data.to(device)
-        label = label.to(device)
-
-        output = model(data.float())
-        loss = mse(output, label)
-
-        optim.zero_grad()
-        loss.backward()
-        optim.step()
-        loss_arr = np.vstack(
-            [loss_arr, [i+total_steps*epoch, loss.detach().numpy()]])
-        if i % log_interval == 0:
-            print(
-                f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
-
 plt.xlabel("Num. Steps")
 plt.ylabel("Loss")
 plt.title("Model Training Progress")
-plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Random Pairing 2")
+
 plt.legend()
 plt.show()
-# total_tests = len(test_loader)
-# sum_err = 0
-# with torch.no_grad():
-#     for i, (data, label) in enumerate(test_loader):
-#         data = data.to(device)
-#         label = label.to(device)
-#         output = model(data.float())
-#         loss = mse(output, label)
-#         sum_err += loss
+total_tests = len(test_loader)
+sum_err = 0
+with torch.no_grad():
+    for i, (data, label) in enumerate(test_loader):
+        data = data.to(device)
+        label = label.to(device)
+        output = model(data.float())
+        loss = mse(output, label)
+        sum_err += loss
 
-# print(sum_err/total_tests)
+print(f"Average evaluation loss: {sum_err/total_tests}")
+
+torch.save(model.state_dict(), "saves/NN_weights")
