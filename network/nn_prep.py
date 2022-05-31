@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from ..tools import preprocess
 import os
 
 # C0_05 IS IMG_4014
@@ -182,6 +183,13 @@ for i in tqdm(range((60+14)*FRAMERATE, length)):
     combined_data = np.vstack([combined_data, curr_row])
 
 print(f"Final shape is {combined_data.shape}")
+
+for i in range(len(combined_data)):
+    for j in range(266):
+        if j % 2 == 0:
+            combined_data[i][j] = combined_data[i][j]/3840
+        else:
+            combined_data[i][j] = combined_data[i][j]/2160
 
 with open(os.path.join("saves", "neural"), 'wb') as f:
     np.save(f, combined_data)
