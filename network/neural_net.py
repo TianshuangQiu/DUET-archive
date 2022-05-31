@@ -28,9 +28,9 @@ torch.manual_seed(random_seed)
 
 
 class Move(Dataset):
-    def __init__(self) -> None:
+    def __init__(self, filename) -> None:
         super().__init__()
-        with open("saves/neural", 'rb') as f:
+        with open(filename, 'rb') as f:
             neural_data = np.load(f)
 
         self.x = torch.from_numpy(neural_data[:, :266])
@@ -58,7 +58,7 @@ class Model(nn.Module):
         return self.l3(x)
 
 
-dataset = Move()
+dataset = Move("saves/neural")
 train_data, test_data = torch.utils.data.random_split(dataset, [(int)(len(dataset)*0.8), len(
     dataset)-(int)(len(dataset)*0.8)], generator=torch.Generator().manual_seed(random_seed))
 train_loader = DataLoader(
@@ -90,19 +90,91 @@ for epoch in range(n_epochs):
             [loss_arr, [i+total_steps*epoch, loss.detach().numpy()]])
         if i % log_interval == 0:
             print(
-                f"EPOCH: {epoch}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
+                f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
+plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Correct Pairing")
 
+dataset = Move("saves/neural_test")
+train_data, test_data = torch.utils.data.random_split(dataset, [(int)(len(dataset)*0.8), len(
+    dataset)-(int)(len(dataset)*0.8)], generator=torch.Generator().manual_seed(random_seed))
+train_loader = DataLoader(
+    dataset=train_data, batch_size=batch_size_train, shuffle=True)
+test_loader = DataLoader(
+    dataset=test_data, batch_size=batch_size_test, shuffle=False)
 
-plt.plot(loss_arr[1:, 0], loss_arr[1:, 1])
-plt.show()
-total_tests = len(test_loader)
-sum_err = 0
-with torch.no_grad():
-    for i, (data, label) in enumerate(test_loader):
+mse = nn.MSELoss()
+model = Model(266, 100, 6)
+optim = torch.optim.SGD(
+    lr=learning_rate, params=model.parameters(), momentum=momentum)
+
+total_steps = len(train_loader)
+print(total_steps)
+loss_arr = np.array([0, 0])
+for epoch in range(n_epochs):
+    for i, (data, label) in enumerate(train_loader):
         data = data.to(device)
         label = label.to(device)
+
         output = model(data.float())
         loss = mse(output, label)
-        sum_err += loss
 
-print(sum_err/total_tests)
+        optim.zero_grad()
+        loss.backward()
+        optim.step()
+        loss_arr = np.vstack(
+            [loss_arr, [i+total_steps*epoch, loss.detach().numpy()]])
+        if i % log_interval == 0:
+            print(
+                f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
+plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Random Pairing 1")
+
+
+dataset = Move("saves/neural_test_2")
+train_data, test_data = torch.utils.data.random_split(dataset, [(int)(len(dataset)*0.8), len(
+    dataset)-(int)(len(dataset)*0.8)], generator=torch.Generator().manual_seed(random_seed))
+train_loader = DataLoader(
+    dataset=train_data, batch_size=batch_size_train, shuffle=True)
+test_loader = DataLoader(
+    dataset=test_data, batch_size=batch_size_test, shuffle=False)
+
+mse = nn.MSELoss()
+model = Model(266, 100, 6)
+optim = torch.optim.SGD(
+    lr=learning_rate, params=model.parameters(), momentum=momentum)
+
+total_steps = len(train_loader)
+print(total_steps)
+loss_arr = np.array([0, 0])
+for epoch in range(n_epochs):
+    for i, (data, label) in enumerate(train_loader):
+        data = data.to(device)
+        label = label.to(device)
+
+        output = model(data.float())
+        loss = mse(output, label)
+
+        optim.zero_grad()
+        loss.backward()
+        optim.step()
+        loss_arr = np.vstack(
+            [loss_arr, [i+total_steps*epoch, loss.detach().numpy()]])
+        if i % log_interval == 0:
+            print(
+                f"EPOCH: {epoch+1}/{n_epochs}, step {i}/{total_steps},loss = {loss}")
+
+plt.xlabel("Num. Steps")
+plt.ylabel("Loss")
+plt.title("Model Training Progress")
+plt.plot(loss_arr[1:, 0], loss_arr[1:, 1], label="Random Pairing 2")
+plt.legend()
+plt.show()
+# total_tests = len(test_loader)
+# sum_err = 0
+# with torch.no_grad():
+#     for i, (data, label) in enumerate(test_loader):
+#         data = data.to(device)
+#         label = label.to(device)
+#         output = model(data.float())
+#         loss = mse(output, label)
+#         sum_err += loss
+
+# print(sum_err/total_tests)

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from ..tools import preprocess
 import os
 
 # C0_05 IS IMG_4014
@@ -21,7 +20,7 @@ print("Processing C0_05")
 with open("saves/C0_05", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4014.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4010.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -44,7 +43,7 @@ print("Processing C0_06")
 with open("saves/C0_06", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4014.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4012.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -65,7 +64,7 @@ print("Processing C0_07")
 with open("saves/C0_07", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4014.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4013.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -108,7 +107,7 @@ print("Processing C0_10")
 with open("saves/C0_10", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4015.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4012.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -136,7 +135,7 @@ print("Processing C0_13")
 with open("saves/C0_13", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4013.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4011.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -164,7 +163,7 @@ print("Processing C0_14")
 with open("saves/C0_14", 'rb') as f:
     human = np.load(f)
 
-df = pd.read_csv('datafiles/IMG_4010.dat', sep='\t',
+df = pd.read_csv('datafiles/IMG_4012.dat', sep='\t',
                  header=None, engine='python')
 robot = df.to_numpy(dtype=np.float32)
 
@@ -191,5 +190,5 @@ for i in range(len(combined_data)):
         else:
             combined_data[i][j] = combined_data[i][j]/2160
 
-with open(os.path.join("saves", "neural"), 'wb') as f:
+with open(os.path.join("saves", "neural_test_2"), 'wb') as f:
     np.save(f, combined_data)
