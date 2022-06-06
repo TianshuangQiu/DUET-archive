@@ -10,8 +10,8 @@ class Model(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
         self.l1 = nn.Linear(input_size, hidden_size)
-        self.l2 = nn.Linear(hidden_size, hidden_size//2)
-        self.l3 = nn.Linear(hidden_size//2, output_size)
+        self.l2 = nn.Linear(hidden_size, hidden_size)
+        self.l3 = nn.Linear(hidden_size, output_size)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -20,7 +20,7 @@ class Model(nn.Module):
         return self.l3(x)
 
 
-model = Model(266, 100, 6)
+model = Model(399, 500, 6)
 model.load_state_dict(torch.load("saves/NN_weights"))
 
 with open("saves/C0_07", 'rb') as f:
@@ -40,8 +40,16 @@ for vector in test_data:
     output = np.vstack([output, out_tensor])
 
 output = output[1:]
+output[:, 0] *= (np.pi * 2)
+output[:, 1] *= (np.pi * 2)
+output[:, 2] *= (np.pi)
+output[:, 3] *= (np.pi * 2)
+output[:, 4] *= (np.pi * 2)
+output[:, 5] *= (np.pi * 2)
 time_arr = np.linspace(0, len(output)/FRAMERATE, len(output))
 final = np.hstack([time_arr.reshape(len(output), 1), output])
+
+
 with open("saves/NN_out", "wb") as f:
     np.save(f, final)
 

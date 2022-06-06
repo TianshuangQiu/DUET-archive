@@ -25,7 +25,7 @@ df = pd.read_csv('datafiles/IMG_4010.dat', sep='\t',
 robot = df.to_numpy(dtype=np.float32)
 
 length = len(human)
-combined_data = np.zeros(266+6)
+combined_data = np.zeros(399+6)
 
 for i in tqdm(range(length)):
     ratio = i/length
@@ -190,5 +190,12 @@ for i in range(len(combined_data)):
         else:
             combined_data[i][j] = combined_data[i][j]/2160
 
-with open(os.path.join("saves", "neural_test_2"), 'wb') as f:
+combined_data[:, 399] = combined_data[:, 399]/(2*np.pi)
+combined_data[:, 400] = combined_data[:, 400]/(2*np.pi)
+combined_data[:, 401] = combined_data[:, 401]/(np.pi)
+combined_data[:, 402] = combined_data[:, 402]/(2*np.pi)
+combined_data[:, 403] = combined_data[:, 403]/(2*np.pi)
+combined_data[:, 404] = combined_data[:, 404]/(2*np.pi)
+
+with open(os.path.join("saves", "neural"), 'wb') as f:
     np.save(f, combined_data)

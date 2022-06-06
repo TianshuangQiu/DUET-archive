@@ -33,8 +33,8 @@ class Move(Dataset):
         with open(filename, 'rb') as f:
             neural_data = np.load(f)
 
-        self.x = torch.from_numpy(neural_data[:, :266])
-        self.y = torch.from_numpy(neural_data[:, 266:])
+        self.x = torch.from_numpy(neural_data[:, :399])
+        self.y = torch.from_numpy(neural_data[:, 399:])
         self.n_samples = len(neural_data)
 
     def __getitem__(self, index):
@@ -48,8 +48,8 @@ class Model(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super().__init__()
         self.l1 = nn.Linear(input_size, hidden_size)
-        self.l2 = nn.Linear(hidden_size, hidden_size//2)
-        self.l3 = nn.Linear(hidden_size//2, output_size)
+        self.l2 = nn.Linear(hidden_size, hidden_size)
+        self.l3 = nn.Linear(hidden_size, output_size)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -67,7 +67,7 @@ test_loader = DataLoader(
     dataset=test_data, batch_size=batch_size_test, shuffle=False)
 
 mse = nn.MSELoss()
-model = Model(266, 100, 6)
+model = Model(399, 500, 6)
 optim = torch.optim.SGD(
     lr=learning_rate, params=model.parameters(), momentum=momentum)
 
