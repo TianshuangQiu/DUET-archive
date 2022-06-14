@@ -13,7 +13,7 @@ prev_hand_kp = {'left': [0, 0], 'right': [0, 0]}
 prev_thumb_kp = [0, 0]
 NUM_SINES = 5
 
-video = "C0_11"
+video = "C0_14"
 framecount = 1414
 
 # %%
@@ -215,9 +215,16 @@ plt.title("Raw Joint Angle Data:")
 
 df = pd.read_csv(
     '~/autolab/DUET/datafiles/IMG_4015.dat', sep='\t', dtype=np.float)
-traj = df.to_numpy(dtype=np.float)
+tmp = df.to_numpy(dtype=np.float)
+
+print("ff", len(tmp))
+traj = []
+for i in np.arange(0, len(tmp), len(tmp)/len(data[0])):
+    traj.append(tmp[(int)(i)])
+
+traj = np.array(traj)
 for i in range(1, 7):
-    plt.plot(traj[::20, i], color='red')
+    plt.plot(traj[:, i], color='red')
 plt.legend()
 plt.show()
 # %%
@@ -256,7 +263,7 @@ plt.plot(np.arange(len(data[0])), wrist_r, label="wrist_r")
 plt.plot(np.arange(len(data[0])), wrist_r2, label="wrist_r2")
 
 for i in range(1, 7):
-    plt.plot(traj[::20, i], color='black')
+    plt.plot(traj[:, i], color='black')
 # plt.plot(np.arange(len(data[0])), data[3] - data[2], label="rotation")
 plt.title("Gaussian Smoothed and Interpolated Trajectories")
 plt.legend()
@@ -280,7 +287,8 @@ for arr in tqdm([neck, chest_l, elbow_l, wrist_l, wrist_l2, chest_r, elbow_r, wr
     plt.xlabel('Real')
     counter += 1
 
-for arr in tqdm(traj.T[3:4, ::20]):
+i = 0
+for arr in tqdm(traj.T[1:7]):
     # create data of complex numbers
     fft_arr = np.fft.fft(arr)
     # extract real part
@@ -288,9 +296,10 @@ for arr in tqdm(traj.T[3:4, ::20]):
     # extract imaginary part
     y = [ele.imag for ele in fft_arr]
 
-    plt.scatter(x, y, color='black', label="ROBOT3")
+    plt.scatter(x, y, color='black', label=f"ROBOT{i}")
     plt.ylabel('Imaginary')
     plt.xlabel('Real')
+    i += 1
 # plot the complex numbers
 plt.legend()
 plt.show()

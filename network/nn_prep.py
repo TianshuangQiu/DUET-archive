@@ -25,7 +25,7 @@ df = pd.read_csv('datafiles/IMG_4010.dat', sep='\t',
 robot = df.to_numpy(dtype=np.float32)
 
 length = len(human)
-combined_data = np.zeros(399+6)
+combined_data = np.zeros(266+6)
 
 for i in tqdm(range(length)):
     ratio = i/length

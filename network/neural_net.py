@@ -67,7 +67,7 @@ test_loader = DataLoader(
     dataset=test_data, batch_size=batch_size_test, shuffle=False)
 
 mse = nn.MSELoss()
-model = Model(399, 500, 6)
+model = Model(266, 500, 6)
 optim = torch.optim.SGD(
     lr=learning_rate, params=model.parameters(), momentum=momentum)
 

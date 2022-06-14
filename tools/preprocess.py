@@ -149,7 +149,7 @@ for n in tqdm(range(1, len(all_frames))):
     # plt.show()
 
 
-all_frames = np.vstack([all_frames, confidence_arr]).T
+# all_frames = np.vstack([all_frames, confidence_arr]).T
 
 # def fourier_filter(array, thresh):
 #     fourier = np.fft.rfft(array)
@@ -171,4 +171,4 @@ all_frames = np.vstack([all_frames, confidence_arr]).T
 #     for j in range(len(ftr_val)):
 #         all_frames[j][i] = ftr_val[j]
 with open(os.path.join("saves", args.file_path.split('/')[-1]), 'wb') as f:
-    np.save(f, all_frames)
+    np.save(f, all_frames.T)
