@@ -12,7 +12,7 @@ import numpy as np
 # C0_09 IS IMG_4015
 # C0_10 is IMG_4015
 # C0_13 is IMG_4013 TWICE
-# C0_13 is IMG_4010 TWICE
+# C0_14 is IMG_4010 TWICE
 
 
 n_epochs = 30

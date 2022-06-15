@@ -1,5 +1,4 @@
 # %%
-from cProfile import label
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -214,7 +213,7 @@ for i in range(len(tl[0])):
 plt.title("Raw Joint Angle Data:")
 
 df = pd.read_csv(
-    '~/autolab/DUET/datafiles/IMG_4015.dat', sep='\t', dtype=np.float)
+    '~/autolab/DUET/datafiles/IMG_4010.dat', sep='\t', dtype=np.float)
 tmp = df.to_numpy(dtype=np.float)
 
 print("ff", len(tmp))

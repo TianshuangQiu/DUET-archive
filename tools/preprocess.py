@@ -59,28 +59,30 @@ for n in range(len(raw_list)):
         frame_dict.append(y)
         frame_confidence.append(confidence)
 
-    for i in range(20):
-        x = hand_r[i*3]
-        y = hand_r[i*3+1]
-        confidence = hand_r[i*3+2]
-        frame_dict.append(x)
-        frame_dict.append(y)
-        frame_confidence.append(confidence)
+    if len(hand_l) > 0:
+        for i in range(21):
+            x = hand_r[i*3]
+            y = hand_r[i*3+1]
+            confidence = hand_r[i*3+2]
+            frame_dict.append(x)
+            frame_dict.append(y)
+            frame_confidence.append(confidence)
 
-        x = hand_l[i*3]
-        y = hand_l[i*3+1]
-        confidence = hand_l[i*3+2]
-        frame_dict.append(x)
-        frame_dict.append(y)
-        frame_confidence.append(confidence)
+            x = hand_l[i*3]
+            y = hand_l[i*3+1]
+            confidence = hand_l[i*3+2]
+            frame_dict.append(x)
+            frame_dict.append(y)
+            frame_confidence.append(confidence)
 
-    for i in range(69):
-        x = face[i*3]
-        y = face[i*3+1]
-        confidence = face[i*3+2]
-        frame_dict.append(x)
-        frame_dict.append(y)
-        frame_confidence.append(confidence)
+    if len(face) > 0:
+        for i in range(69):
+            x = face[i*3]
+            y = face[i*3+1]
+            confidence = face[i*3+2]
+            frame_dict.append(x)
+            frame_dict.append(y)
+            frame_confidence.append(confidence)
 
     confidence_arr.append(np.array(frame_confidence))
     all_frames.append(frame_dict)
@@ -95,9 +97,16 @@ for n in tqdm(range(1, len(all_frames))):
     curr_vector = all_frames[n]
     confidence_vector = confidence_arr[n//2]
     prev_val = curr_vector[0]
-    # plt.plot(curr_vector, label="unfiltered")
-    # plt.plot(confidence_vector*1000, label="conf")
+    # if n == 6 or n == 7:
+    #     plt.plot(curr_vector, label="unfiltered")
+    #     plt.plot(confidence_vector*1000, label="conf")
 
+    curr_vec_d = np.abs(np.gradient(curr_vector))
+
+    indices = [i for i, x in enumerate(curr_vec_d) if x > 100]
+    for i in indices:
+        curr_vector[i-5:i+5] = 0
+        confidence_vector[i-5:i+5] = 0
     k = 1
     while k < len(curr_vector):
         # If we have a point that is not here, then first find the last known location
@@ -144,9 +153,10 @@ for n in tqdm(range(1, len(all_frames))):
             prev_val = curr_vector[k]
             k += 1
 
-    # plt.plot(all_frames[n], label="filtered")
-    # plt.legend()
-    # plt.show()
+    # if n == 6 or n == 7:
+    #     plt.plot(all_frames[n], label="filtered")
+    #     plt.legend()
+    #     plt.show()
 
 
 # all_frames = np.vstack([all_frames, confidence_arr]).T
